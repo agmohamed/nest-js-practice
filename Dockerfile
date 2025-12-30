@@ -1,15 +1,18 @@
-# Use the Node official image
-# https://hub.docker.com/_/node
-FROM node:lts
+FROM node:20-alpine
 
-# Create and change to the app directory.
 WORKDIR /app
 
-# Copy local code to the container image
-COPY . ./
+# Install deps
+COPY package*.json ./
+RUN npm Install
 
-# Install packages
-RUN npm ci
+# Copy source
+COPY . .
 
-# Serve the app
-CMD ["npm", "run", "start:prod"]
+# Build NestJS
+RUN npm run build
+
+# Railway uses 8080
+EXPOSE 8080
+
+CMD ["node", "dist/main.js"]
